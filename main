@@ -1,0 +1,102 @@
+from PIL import Image, ImageFilter
+
+print('Hello. Here is a Mini-Photoshop.')
+print('If you want to interact with him, write "yes".')
+print('And if not, then stop.')
+print('Below are the filters that you can use.')
+filters = ['blur', 'negative', 'highlighting', 'black and white photo', 'photo resizing',
+           'cutting out a piece of a photo', 'reducing or increasing colors in a photo', 'rotating a photo']
+print(filters)
+text = input()
+c = 0
+
+
+def image_filter(pixels, x, y):
+    for i in range(x):
+        for j in range(y):
+            r, g, b = pixels[i, j]
+            pixels[i, j] = 255 - r, 255 - g, 255 - b
+    im.save('res.jfif')
+
+
+def curve(pixel):
+    r, g, b = pixel
+    brightness = r + g + b if r + g + b > 0 else 1
+    if brightness < 60:
+        k = 60 / brightness
+        return min(255, int(r * k ** 2)), \
+               min(255, int(g * k ** 2)), \
+               min(255, int(b * k ** 2))
+    else:
+        return r, g, b
+
+
+while text.lower() != 'стоп' or text != '':
+    print('Enter the one filter you want.')
+    print('If you forgot which filters the program can perform, write "forgot"')
+    text = input()
+    if text.lower() != 'stop' and text != '':
+        if 'forgot' in text:
+            print(*filters)
+    else:
+        break
+    if c == 0:
+        im = Image.open('image.jfif.jpg')
+        c += 1
+    else:
+        im = Image.open('res.jfif')
+
+    pixels = im.load()
+    x, y = im.size
+    if text.lower() == 'blur':
+        print('Enter the blur depth')
+        im2 = im.filter(ImageFilter.GaussianBlur(radius=int(input())))
+        im2.save('res.jfif')
+
+    if text.lower() == 'negative':
+        image_filter(pixels, x, y)
+
+    if text.lower() == 'highlighting':
+        for i in range(x):
+            for j in range(y):
+                pixels[i, j] = curve(pixels[i, j])
+        im.save('res.jfif')
+
+    if text.lower() == 'black and white photo':
+        for i in range(x):
+            for j in range(y):
+                r, g, b = pixels[i, j]
+                bw = (r + g + b) // 3
+                pixels[i, j] = bw, bw, bw
+        im.save('res.jfif')
+
+    if text.lower() == 'photo resizing':
+        print('Enter the length and width of the image')
+        length = int(input())
+        width = int(input())
+        im2 = im.resize((length, width))
+        im2.save('res.jfif')
+
+    if text.lower() == 'cutting out a piece of a photo':
+        print('Enter the coordinates of the upper-left pixel and the lower-right pixel.')
+        print('Each coordinate separately.')
+        im2 = im.crop((int(input()), int(input()), int(input()), int(input())))
+        im2.save('res.jfif')
+
+    if text.lower() == 'reducing or increasing colors in a photo':
+        print('Write the number of colors')
+        im2 = im.quantize(int(input()))
+        im2.save('res.jfif')
+
+    if text.lower() == 'rotating a photo':
+        print('Enter the number of degrees by which you want to rotate the photo.')
+        rotate = int(input())
+        if rotate == 90:
+            im2 = im.transpose(Image.FLIP_LEFT_RIGHT).transpose(Image.ROTATE_90)
+            im2.save('res.jfif')
+        if rotate == 180:
+            im2 = im.transpose(Image.FLIP_LEFT_RIGHT).transpose(Image.ROTATE_180)
+            im2.save('res.jfif')
+        if rotate == 270:
+            im2 = im.transpose(Image.FLIP_LEFT_RIGHT).transpose(Image.ROTATE_270)
+            im2.save('res.jfif')
