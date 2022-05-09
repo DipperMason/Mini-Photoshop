@@ -35,11 +35,12 @@ while text.lower() != 'стоп' or text != '':
     print('Enter the one filter you want.')
     print('If you forgot which filters the program can perform, write "forgot"')
     text = input()
-    if text.lower() != 'stop' and text != '':
-        if 'forgot' in text:
-            print(*filters)
-    else:
+    if text.lower() == 'stop' or text == '':
         break
+        
+    if 'forgot' in text:
+        print(*filters)
+        
     if c == 0:
         im = Image.open('image.jfif.jpg')
         c += 1
@@ -48,6 +49,7 @@ while text.lower() != 'стоп' or text != '':
 
     pixels = im.load()
     x, y = im.size
+    
     if text.lower() == 'blur':
         print('Enter the blur depth')
         im2 = im.filter(ImageFilter.GaussianBlur(radius=int(input())))
